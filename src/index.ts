@@ -39,6 +39,18 @@ export class ExpoMixpanelAnalytics {
     this.osVersion = Platform.Version;
     this.superProps;
 
+    AsyncStorage.getItem(ASYNC_STORAGE_KEY, (_, result) => {
+      if (result) {
+        try {
+          this.superProps = JSON.parse(result) || {};
+        } catch {}
+      }
+
+      this.ready = true;
+      this.identify(this.clientId);
+      this._flush();
+    });
+
     // Attach custom userAgent if provided. Otherwise, grab WebView userAgent
     if (options.userAgent) {
       this.userAgent = options.userAgent;
@@ -119,18 +131,6 @@ export class ExpoMixpanelAnalytics {
     } else {
       this.platform = "android";
     }
-
-    AsyncStorage.getItem(ASYNC_STORAGE_KEY, (_, result) => {
-      if (result) {
-        try {
-          this.superProps = JSON.parse(result) || {};
-        } catch {}
-      }
-
-      this.ready = true;
-      this.identify(this.clientId);
-      this._flush();
-    });
   }
 
   _flush() {
