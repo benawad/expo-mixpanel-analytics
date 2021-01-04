@@ -8,6 +8,10 @@ const MIXPANEL_API_URL = "https://api.mixpanel.com";
 const ASYNC_STORAGE_KEY = "mixpanel:super:props";
 const isIosPlatform = Platform.OS === "ios";
 
+export type Options = {
+  userAgent?: string;
+};
+
 export class ExpoMixpanelAnalytics {
   ready = false;
   token: string;
@@ -25,7 +29,7 @@ export class ExpoMixpanelAnalytics {
   queue: any[];
   superProps: any = {};
 
-  constructor(token) {
+  constructor(token, options: Options) {
     this.ready = false;
     this.queue = [];
 
