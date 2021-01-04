@@ -18,7 +18,11 @@ import ExpoMixpanelAnalytics from '@benawad/expo-mixpanel-analytics';
 
 ## Usage
 ```
-const analytics = new ExpoMixpanelAnalytics("5224da5bbbed3fdeaad0911820f1bf2x");
+const analytics = new ExpoMixpanelAnalytics(
+    "5224da5bbbed3fdeaad0911820f1bf2x",
+    // Optional
+    { userAgent: 'Custom useragent' }
+);
 
 analytics.identify("13793");
 
