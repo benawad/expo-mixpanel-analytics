@@ -39,32 +39,16 @@ export class ExpoMixpanelAnalytics {
     this.osVersion = Platform.Version;
     this.superProps;
 
-    Constants.getWebViewUserAgentAsync().then(userAgent => {
-      this.userAgent = userAgent;
-      this.appName = Constants.manifest.name;
-      this.appId = Constants.manifest.slug;
-      this.appVersion = Constants.manifest.version;
-      this.screenSize = `${width}x${height}`;
-      this.deviceName = Constants.deviceName;
-      if (isIosPlatform && Constants.platform && Constants.platform.ios) {
-        this.platform = Constants.platform.ios.platform;
-        this.model = Constants.platform.ios.model;
-      } else {
-        this.platform = "android";
-      }
-
-      AsyncStorage.getItem(ASYNC_STORAGE_KEY, (_, result) => {
-        if (result) {
-          try {
-            this.superProps = JSON.parse(result) || {};
-          } catch {}
-        }
-
-        this.ready = true;
-        this.identify(this.clientId);
-        this._flush();
+    // Attach custom userAgent if provided. Otherwise, grab WebView userAgent
+    if (options.userAgent) {
+      this.userAgent = options.userAgent;
+      this._setupDeviceInfo();
+    } else {
+      Constants.getWebViewUserAgentAsync().then((userAgent) => {
+        this.userAgent = userAgent;
+        this._setupDeviceInfo();
       });
-    });
+    }
   }
 
   register(props: any) {
@@ -122,6 +106,32 @@ export class ExpoMixpanelAnalytics {
   }
 
   // ===========================================================================================
+
+  _setupDeviceInfo() {
+    this.appName = Constants.manifest.name;
+    this.appId = Constants.manifest.slug;
+    this.appVersion = Constants.manifest.version;
+    this.screenSize = `${width}x${height}`;
+    this.deviceName = Constants.deviceName;
+    if (isIosPlatform && Constants.platform && Constants.platform.ios) {
+      this.platform = Constants.platform.ios.platform;
+      this.model = Constants.platform.ios.model;
+    } else {
+      this.platform = "android";
+    }
+
+    AsyncStorage.getItem(ASYNC_STORAGE_KEY, (_, result) => {
+      if (result) {
+        try {
+          this.superProps = JSON.parse(result) || {};
+        } catch {}
+      }
+
+      this.ready = true;
+      this.identify(this.clientId);
+      this._flush();
+    });
+  }
 
   _flush() {
     if (this.ready) {
